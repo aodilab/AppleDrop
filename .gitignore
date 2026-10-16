@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*$py.class
+scratch/
+.env
+.venv/
+venv/
+dist/
+build/
+*.spec
+.idea/
+.vscode/
+
+# Internal AI agent rules & skills
+AGENTS.md
+.agents/

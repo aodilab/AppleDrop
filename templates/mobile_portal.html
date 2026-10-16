@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AppleDrop · 局域网原画直传</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "PingFang SC", sans-serif;
+      background-color: #f5f5f7;
+      color: #1d1d1f;
+      padding: 24px 16px 48px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      color: #0066cc;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .main-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: #1d1d1f;
+      letter-spacing: -0.02em;
+    }
+    .sub-title {
+      font-size: 13px;
+      color: #86868b;
+      margin-top: 4px;
+      margin-bottom: 20px;
+    }
+    .apple-card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 18px 16px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+      margin-bottom: 16px;
+    }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f0f2f5;
+    }
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1d1d1f;
+    }
+    .section-meta {
+      font-size: 12px;
+      color: #86868b;
+      font-variant-numeric: tabular-nums;
+    }
+    .file-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid #f0f2f5;
+      gap: 12px;
+    }
+    .file-row:last-child { border-bottom: none; padding-bottom: 2px; }
+    .file-info { flex: 1; min-width: 0; }
+    .file-name {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: #1d1d1f;
+      word-break: break-all;
+      line-height: 1.35;
+    }
+    .file-meta {
+      font-size: 12px;
+      color: #86868b;
+      margin-top: 3px;
+      font-variant-numeric: tabular-nums;
+    }
+    .link-action {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #0066cc;
+      text-decoration: none;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .btn-space-black {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 44px;
+      margin-top: 14px;
+      background: #1d1d1f;
+      color: #ffffff;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+    }
+    .empty-box {
+      padding: 32px 12px 18px;
+      text-align: center;
+      color: #86868b;
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+    .step-row {
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f2f5;
+      font-size: 13.5px;
+      color: #4b4b4e;
+      line-height: 1.5;
+    }
+    .step-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .step-num {
+      font-weight: 700;
+      color: #1d1d1f;
+      margin-right: 6px;
+      font-variant-numeric: tabular-nums;
+    }
+    .url-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f4f4f6;
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-top: 8px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      color: #1d1d1f;
+      word-break: break-all;
+    }
+    .copy-link {
+      border: none;
+      background: transparent;
+      color: #0066cc;
+      font-size: 12.5px;
+      font-weight: 600;
+      margin-left: 10px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="eyebrow">局域网无损通道 · {{HOST_IP}}</div>
+  <div class="main-title">AppleDrop</div>
+  <div class="sub-title">原画直传 · 零缓存占用 · 直存 iPhone 系统相册</div>
+
+  <div class="apple-card">
+    <div class="section-head">
+      <span class="section-title">待接收队列</span>
+      <span class="section-meta">共 {{FILE_COUNT}} 项</span>
+    </div>
+    {{FILE_ROWS_HTML}}
+    {{ZIP_BUTTON_HTML}}
+  </div>
+
+  <div class="apple-card">
+    <div class="section-head">
+      <span class="section-title">iOS 快捷指令配置</span>
+      <span class="section-meta">配一次终生免扫码</span>
+    </div>
+    <div class="step-row">
+      <span class="step-num">01</span>打开 iPhone 自带「快捷指令」App，点击右上角 <b>+</b> 新建。
+    </div>
+    <div class="step-row">
+      <span class="step-num">02</span>添加操作「获取 URL 的内容」，填入下方固定地址：
+      <div class="url-bar">
+        <span id="api-url">http://{{HOST_IP}}:{{PORT}}/api/latest</span>
+        <button class="copy-link" id="copy-btn" onclick="copyUrl()">复制</button>
+      </div>
+    </div>
+    <div class="step-row">
+      <span class="step-num">03</span>添加操作「存储到相簿」，并添加到主屏幕即可一键收片。
+    </div>
+  </div>
+
+  <script>
+    function copyUrl() {
+      const url = document.getElementById('api-url').innerText;
+      const btn = document.getElementById('copy-btn');
+      navigator.clipboard.writeText(url).then(() => {
+        btn.innerText = '已复制';
+        btn.style.color = '#1b6d2f';
+      });
+    }
+    setTimeout(() => {
+      fetch('/api/files').then(r => r.json()).then(data => {
+        if (data.count !== {{FILE_COUNT}}) window.location.reload();
+      }).catch(() => {});
+    }, 3500);
+  </script>
+</body>
+</html>

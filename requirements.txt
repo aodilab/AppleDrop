@@ -1,0 +1,4 @@
+Pillow>=10.0.0
+qrcode>=7.4.0
+tkinterdnd2>=0.4.0
+pywin32>=306
