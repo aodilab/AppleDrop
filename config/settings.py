@@ -5,8 +5,8 @@ ASSETS_DIR = os.path.join(BASE_DIR, "assets")
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 SCRATCH_DIR = os.path.join(BASE_DIR, "scratch")
 
-ICON_ICO_PATH = os.path.join(ASSETS_DIR, "app_icon_blue.ico")
-ICON_PNG_PATH = os.path.join(ASSETS_DIR, "app_icon_blue.png")
+ICON_ICO_PATH = os.path.join(ASSETS_DIR, "app_icon.ico")
+ICON_PNG_PATH = os.path.join(ASSETS_DIR, "app_icon.png")
 MOBILE_HTML_PATH = os.path.join(TEMPLATES_DIR, "mobile_portal.html")
 
 DEFAULT_PORT = 8899
