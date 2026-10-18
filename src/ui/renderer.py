@@ -29,7 +29,8 @@ class AppleNeoRenderer:
 
         self.p.draw_brand_glyph(draw, 30, 27, r=13)
         self.p.text(draw, 51, 27, "AppleDrop", size=16, bold=True, color=TOKENS["space_black"], anchor="lm")
-        self.p.text(draw, 148, 28, f"·  {host_ip}", size=12, bold=False, color=TOKENS["text_secondary"], anchor="lm")
+        ip_display = f"·  {host_ip}" if port == 8899 else f"·  {host_ip}:{port}"
+        self.p.text(draw, 148, 28, ip_display, size=12, bold=False, color=TOKENS["text_secondary"], anchor="lm")
 
         btn_w, btn_h = 88, 30
         btn_x, btn_y = self.width - 18 - btn_w, 12

@@ -93,7 +93,15 @@ def make_handler(file_queue, host_ip, port):
                 return self._send_text("File Missing", status=404)
 
             file_size = os.path.getsize(file_path)
-            content_type = mimetypes.guess_type(file_path)[0] or "application/octet-stream"
+            ext = os.path.splitext(item["name"])[1].lower() or ".bin"
+            content_type = mimetypes.guess_type(file_path)[0]
+            if not content_type:
+                ext_map = {
+                    ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
+                    ".heic": "image/heic", ".heif": "image/heif", ".webp": "image/webp",
+                    ".gif": "image/gif", ".mp4": "video/mp4", ".mov": "video/quicktime",
+                }
+                content_type = ext_map.get(ext, "application/octet-stream")
             range_header = self.headers.get("Range")
             start, end = 0, file_size - 1
             if range_header and range_header.startswith("bytes="):
@@ -109,7 +117,6 @@ def make_handler(file_queue, host_ip, port):
             self.send_header("Content-Type", content_type)
             self.send_header("Content-Length", str(content_length))
             self.send_header("Accept-Ranges", "bytes")
-            ext = os.path.splitext(item["name"])[1] or ".bin"
             fallback_ascii = f"AppleDrop_Media{ext}"
             safe_utf8 = urllib.parse.quote(item["name"])
             self.send_header("Content-Disposition", f'attachment; filename="{fallback_ascii}"; filename*=UTF-8\'\'{safe_utf8}')
