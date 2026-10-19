@@ -2,6 +2,7 @@ import os
 import io
 import json
 import time
+import socket
 import zipfile
 import mimetypes
 import threading
@@ -17,6 +18,11 @@ from src.core.queue_manager import get_local_ip, format_size
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     daemon_threads = True
     allow_reuse_address = False
+
+    def server_bind(self):
+        if hasattr(socket, "SO_EXCLUSIVEADDRUSE"):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+        super().server_bind()
 
 
 def make_handler(file_queue, host_ip, port):
@@ -217,22 +223,13 @@ class ServerThread:
             pass
 
     def start(self):
-        for p in range(self.port, self.port + 10):
-            handler_cls = make_handler(self.file_queue, self.host_ip, p)
+        handler_cls = make_handler(self.file_queue, self.host_ip, self.port)
+        for _ in range(3):
             try:
-                self.httpd = ThreadedHTTPServer(("0.0.0.0", p), handler_cls)
-                self.port = p
+                self.httpd = ThreadedHTTPServer(("0.0.0.0", self.port), handler_cls)
                 break
             except OSError:
-                if p == self.port:
-                    self._reclaim_port(p)
-                    try:
-                        self.httpd = ThreadedHTTPServer(("0.0.0.0", p), handler_cls)
-                        self.port = p
-                        break
-                    except OSError:
-                        pass
-                continue
+                self._reclaim_port(self.port)
         if not self.httpd:
             raise RuntimeError(f"无法绑定局域网服务端口 {self.port}")
         self.thread = threading.Thread(target=self.httpd.serve_forever, daemon=True)
