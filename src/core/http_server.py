@@ -5,6 +5,7 @@ import time
 import zipfile
 import mimetypes
 import threading
+import subprocess
 import urllib.parse
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from socketserver import ThreadingMixIn
@@ -202,14 +203,35 @@ class ServerThread:
         self.httpd = None
         self.thread = None
 
+    @staticmethod
+    def _reclaim_port(port):
+        try:
+            out = subprocess.check_output(["netstat", "-ano", "-p", "TCP"], text=True, creationflags=0x08000000)
+            for line in out.splitlines():
+                if f":{port} " in line and "LISTENING" in line:
+                    pid = int(line.strip().split()[-1])
+                    if pid > 0 and pid != os.getpid():
+                        subprocess.run(["taskkill", "/F", "/PID", str(pid)], creationflags=0x08000000, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            time.sleep(0.15)
+        except Exception:
+            pass
+
     def start(self):
-        handler_cls = make_handler(self.file_queue, self.host_ip, self.port)
         for p in range(self.port, self.port + 10):
+            handler_cls = make_handler(self.file_queue, self.host_ip, p)
             try:
                 self.httpd = ThreadedHTTPServer(("0.0.0.0", p), handler_cls)
                 self.port = p
                 break
             except OSError:
+                if p == self.port:
+                    self._reclaim_port(p)
+                    try:
+                        self.httpd = ThreadedHTTPServer(("0.0.0.0", p), handler_cls)
+                        self.port = p
+                        break
+                    except OSError:
+                        pass
                 continue
         if not self.httpd:
             raise RuntimeError(f"无法绑定局域网服务端口 {self.port}")
